@@ -733,3 +733,7 @@ while (1)
 该程序在声卡不进行录音时是将声卡设备给停止工作了的，**==在停止声卡设备前需要加入一小段的延时等待==**，若不添加延时等待，可能会出现子线程使声卡设备停止的同时主线程在读取声卡设备，从而导致下图中出现的错误：
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/723f7197a06a4aaba3980bc2d3ec8e58.png#pic_center)
 
+---
+
+# 源代码(转载请注明出处)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/ea1d8aad7cb141839ef6b2f6c54b3c38.png#pic_center)
