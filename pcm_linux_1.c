@@ -1,11 +1,12 @@
 /***************************************************************
 文件名 : pcm_linux_1.c
 作者 : Octopus
-参考 : https://cloud.tencent.com/developer/article/1932857
+博客 : https://blog.csdn.net/Octopus1633?
+参考 : https://cloud.tencent.com/developer/article/1932699?areaSource=&traceId=
 描述 : 进行音频采集，本地保存PCM音频文件，识别音频文件
 参数 : 声道数：1；采样位数：16bit、LE格式；采样频率：16000Hz
-编译 : $ gcc pcm_linux_1.c -o api -lasound -lcurl 
-运行示例 : $ ./api record.pcm
+编译 : $ gcc pcm_linux_1.c asrmain.c common.c token.c -o voice -lasound -lcurl 
+运行示例 : $ ./voice record.pcm
 ***************************************************************/
 
 #include <stdio.h>
@@ -39,6 +40,7 @@ char *buffer;						// 指向应用程序缓冲区的指针
 int pcm_flag_now = 0;				// PCM设备当前状态
 int pcm_flag_old = 0;				// PCM设备前一次状态
 int start_flag = 0;					// 程序运行标志位
+char *pcm_file_name = NULL;			// PCM音频文件名
 
 /************************************
  函数声明
@@ -74,6 +76,9 @@ int main(int argc, char *argv[])
 		printf("Usage: ./可执行程序 保存音频文件名\n");
 		return 0;
 	}
+
+	/*保存PCM文件名*/
+	pcm_file_name = argv[1];
 
 	/*API相关初始化*/
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -175,16 +180,26 @@ void *read_tfn(void *arg)
 			/*用户输入的是字符A*/
 			if(strcmp(buf, "A\n") == 0)
 			{
-				snd_pcm_prepare(capture_handle); //使设备恢复进入准备状态
-				fseek(pcm_data_file, 0,SEEK_SET);//文件读写指针偏移 使文件从头开始写 等于重新录制音频进行识别
-				pcm_flag_now = 1;//PCM状态标志位置1
+				/**
+				 * 1.使设备恢复进入准备状态
+				 * 2.清空音频文件内容
+				 * 3.PCM状态标志位置1
+				*/
+				snd_pcm_prepare(capture_handle); 
+				truncate(pcm_file_name,1);
+				pcm_flag_now = 1;
 			}
 			/*用户输入的是字符B*/
             else if(strcmp(buf, "B\n") == 0)
 			{
-				pcm_flag_now = 0;//PCM状态标志位清零
-				sleep(1);//sleep 1
-				snd_pcm_drop(capture_handle);//停止PCM设备
+				/**
+				 * 1.PCM状态标志位清零
+				 * 2.睡眠1s，等待主循环判断，避免出现停止PCM设备后仍继续读取PCM设备
+				 * 3.停止PCM设备
+				*/
+				pcm_flag_now = 0;
+				sleep(1);
+				snd_pcm_drop(capture_handle);
 			}
         }
     }

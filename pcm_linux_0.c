@@ -1,7 +1,8 @@
 /***************************************************************
 文件名 : pcm_linux_1.c
 作者 : Octopus
-参考 : https://cloud.tencent.com/developer/article/1932857
+博客 : https://blog.csdn.net/Octopus1633?
+参考 : https://cloud.tencent.com/developer/article/1932699?areaSource=&traceId=
 描述 : 进行音频采集，本地保存PCM音频文件，识别音频文件
 参数 : 声道数：1；采样位数：16bit、LE格式；采样频率：16000Hz
 编译 : $ gcc pcm_linux_0.c -o pcm0 -lasound 
